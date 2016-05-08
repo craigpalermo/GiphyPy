@@ -1,5 +1,6 @@
 import argparse
 import json
+import random
 import requests
 
 # Configuration
@@ -7,7 +8,7 @@ giphy = {
     "api_key": "dc6zaTOxFJmzC",
     "search_url": "http://api.giphy.com/v1/gifs/search",
     "rating": "r",
-    "image_size_prefs": ["fixed_height", "fixed_height_small", "downsized", "original"]
+    "image_size_prefs": ["original", "fixed_width", "fixed_height", "fixed_height_small", "downsized"]
 }
 
 # Parse CI args
@@ -20,7 +21,7 @@ def giphy_search(query):
     :param query:
     :return results:
     '''
-    payload = {"q": query, "api_key": giphy["api_key"], "limit": 3}
+    payload = {"q": query, "api_key": giphy["api_key"], "limit": 25}
     r = requests.get(giphy["search_url"], params=payload)
     results = json.loads(r.text) if r.status_code == requests.codes.ok else None
     return results
@@ -37,7 +38,8 @@ def select_gif(response_data):
     result = None
 
     if len(data) > 0:
-        images = response_data["data"][0]["images"]
+        index = random.randrange(0, len(data) - 1)
+        images = response_data["data"][index]["images"]
 
         if images:
             # Get first available image size preference
